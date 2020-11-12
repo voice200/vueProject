@@ -38,7 +38,9 @@
                elevate-on-scroll
     >
 
-      <v-toolbar-title>{{ titlePage }} </v-toolbar-title>
+      <v-toolbar-title>
+        <router-link to="/" tag="span" class="pointer">Ad application</router-link>
+      </v-toolbar-title>
 
       <v-spacer></v-spacer>
       <v-app-bar-nav-icon
@@ -109,5 +111,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .pointer{
+    cursor: pointer;
+  }
 </style>
