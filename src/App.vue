@@ -1,28 +1,113 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-navigation-drawer
+        temporary
+        app
+        v-model="drawer"
+    >
+      <v-card
+          max-width="500"
+          class="mx-auto"
+      >
+        <v-list>
+          <v-list-item
+              v-for="item in items"
+              :key="item.title"
+              :to="item.url"
+          >
+            <v-list-item-icon>
+              <v-icon
+                  v-if="item.icon"
+                  color="black"
+              >
+                {{item.icon}}
+              </v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-navigation-drawer>
+
+    <v-app-bar app
+               absolute
+               color="white"
+               elevate-on-scroll
+    >
+
+      <v-toolbar-title>{{ titlePage }} </v-toolbar-title>
+
+      <v-spacer></v-spacer>
+      <v-app-bar-nav-icon
+          class="hidden-md-and-up mr-sm-n4 mr-xs-10"
+          @click="drawer = !drawer"
+      >
+
+      </v-app-bar-nav-icon>
+
+      <v-btn depressed
+             v-for="item in items"
+             :key="item.title"
+             :to="item.url"
+             color="white"
+             class="hidden-sm-and-down">
+        <v-icon
+            left
+        >
+          {{item.icon}}
+        </v-icon>
+        {{item.title}}
+      </v-btn>
+      <!-- -->
+    </v-app-bar>
+
+    <!-- Sizes your content based upon application components -->
+    <v-main>
+
+        <router-view></router-view>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  data () {
+    return{
+      drawer: false,
+      items:[
+        {title: 'login', icon: 'mdi-lock', url: '/login', namePage: 'Login form'},
+        {title: 'Registration', icon: 'mdi-face', url: '/registration', namePage:'Registration form'},
+        {title: 'Orders', icon: 'mdi-bookmark-outline', url: '/orders', namePage:'Orders'},
+        {title: 'New ad', icon: 'mdi-file-plus', url: '/new', namePage:'New ad'},
+        {title: 'My ads', icon: 'mdi-format-list-bulleted', url: '/list', namePage:'My list' }
+      ],
+      titlePage: ''
+    }
+  },
+  methods: {
+    getTitle () {
+      const routeName = this.$route.name
+      this.items.forEach(item =>{
+       const url = item.url.slice(1)
+          if (url === routeName){
+            this.titlePage = item.namePage
+          }
+          return this.titlePage
+      })
+    }
+  },
+  beforeMount() {
+    this.getTitle()
+  },
+  beforeUpdate() {
+    this.getTitle()
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style scoped>
+
 </style>
