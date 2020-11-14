@@ -18,14 +18,14 @@
             <v-list-item-icon>
               <v-icon
                   v-if="item.icon"
-                  color="black"
+                  color="teal accent-2"
               >
                 {{item.icon}}
               </v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
+              <v-list-item-title v-text="item.title" ></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -39,7 +39,8 @@
     >
 
       <v-toolbar-title>
-        <router-link to="/" tag="span" class="pointer">Ad application</router-link>
+        <router-link to="/" tag="span" class="pointer" >Ad application</router-link>
+        <v-divider color="teal accent-2"></v-divider>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -56,6 +57,7 @@
              :to="item.url"
              color="white"
              class="hidden-sm-and-down">
+
         <v-icon
             left
         >
@@ -68,8 +70,12 @@
 
     <!-- Sizes your content based upon application components -->
     <v-main>
+      <v-container>
+        <v-subheader id="subheader" color="black" v-if="titlePage">{{titlePage}}</v-subheader>
+        <v-divider class="mb-8" color="teal accent-2" v-if="titlePage"></v-divider>
 
         <router-view></router-view>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -91,6 +97,7 @@ export default {
   },
   methods: {
     getTitle () {
+      this.titlePage=''
       const routeName = this.$route.name
       this.items.forEach(item =>{
        const url = item.url.slice(1)
@@ -110,8 +117,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
   .pointer{
     cursor: pointer;
+  }
+  #subheader{
+    font-size: 20px;
+    color: black;
   }
 </style>

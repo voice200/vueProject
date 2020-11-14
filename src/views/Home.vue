@@ -27,7 +27,6 @@
                 :key="ad.id"
         >
           <v-card
-              :loading="loading"
               class="mx-auto my-12"
               max-width="374"
           >
@@ -55,17 +54,15 @@
               <v-spacer></v-spacer>
               <v-btn
                   class="card-btn"
-                  depressed
+                  outlined
                   color="black"
                   text
-                  @click="reserve"
               >
                 Buy
               </v-btn>
               <v-btn
                   color="black"
                   text
-                  @click="reserve"
                   :to="'/ad/' + ad.id"
               >
                 Open

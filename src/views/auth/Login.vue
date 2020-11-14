@@ -2,6 +2,9 @@
   <v-container>
     <v-layout row>
       <v-flex md6>
+<!--        <v-subheader-->
+<!--            class="subheader">Login form</v-subheader>-->
+<!--        <v-divider></v-divider>-->
         <validation-observer
             ref="observer"
             v-slot="{ invalid }"
@@ -37,7 +40,8 @@
             </validation-provider>
 
             <v-btn
-                class="mr-4"
+                class="mr-4 btn-orders"
+                outlined
                 type="submit"
                 :disabled="invalid"
             >
