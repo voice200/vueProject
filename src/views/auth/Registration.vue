@@ -10,19 +10,6 @@
           >
             <validation-provider
                 v-slot="{ errors }"
-                name="Login"
-                rules="required|min:6"
-            >
-              <v-text-field
-                  v-model="login"
-                  :error-messages="errors"
-                  label="Login"
-                  required
-                  :counter="6"
-              ></v-text-field>
-            </validation-provider>
-            <validation-provider
-                v-slot="{ errors }"
                 name="email"
                 rules="required|email"
             >
@@ -65,7 +52,8 @@
             <v-btn
                 class="mr-4"
                 type="submit"
-                :disabled="invalid"
+                :loading="loading"
+                :disabled="invalid||loading"
             >
               Create account
             </v-btn>
@@ -115,21 +103,28 @@ export default {
     ValidationObserver,
   },
   data: () => ({
-    login: '',
     email: '',
     password: '',
     confirmation: ''
   }),
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
+  },
 
   methods: {
     submit () {
       if(this.$refs.observer.validate()) {
         const user = {
-          login: this.login,
           email: this.email,
           password: this.password
         }
-        console.log(user)
+        this.$store.dispatch('registerUser', user)
+            .then(() => {
+                this.$router.push('/')
+            })
+            .catch(err => console.log(err))
       }
     },
     clear () {

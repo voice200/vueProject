@@ -13,15 +13,14 @@
           >
             <validation-provider
                 v-slot="{ errors }"
-                name="Login"
-                rules="required|min:6"
+                name="email"
+                rules="required|email"
             >
               <v-text-field
-                  v-model="login"
+                  v-model="email"
                   :error-messages="errors"
-                  label="Login"
+                  label="E-mail"
                   required
-                  :counter="6"
               ></v-text-field>
             </validation-provider>
             <validation-provider
@@ -43,7 +42,8 @@
                 class="mr-4 btn-orders"
                 outlined
                 type="submit"
-                :disabled="invalid"
+                :loading="loading"
+                :disabled="invalid||loading"
             >
               login
             </v-btn>
@@ -58,10 +58,15 @@
 </template>
 
 <script>
-import { required, min } from 'vee-validate/dist/rules'
+import {required, min, email} from 'vee-validate/dist/rules'
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
 
-setInteractionMode('eager')
+setInteractionMode('eager', )
+
+extend('email', {
+  ...email,
+  message: 'Email must be valid',
+})
 
 extend('required', {
   ...required,
@@ -80,22 +85,31 @@ export default {
     ValidationObserver,
   },
   data: () => ({
-    login: '',
+    email: '',
     password: '',
   }),
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
+  },
 
   methods: {
     submit () {
       if(this.$refs.observer.validate()) {
         const user = {
-          login: this.login,
+          email: this.email,
           password: this.password
         }
-        console.log(user)
+        this.$store.dispatch('loginUser',user)
+            .then(() => {
+              this.$router.push('/')
+            })
+            .catch(err => console.log(err))
       }
     },
     clear () {
-      this.login = ''
+      this.email= '',
       this.password = ''
       this.$refs.observer.reset()
     },

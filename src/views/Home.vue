@@ -3,9 +3,9 @@
     <v-container fluid>
       <v-layout row>
         <v-flex xs12>
-            <v-carousel>
+            <v-carousel class="carousel">
               <v-carousel-item
-                  v-for="ad in ads"
+                  v-for="ad in promoAds"
                   :key="ad.id"
                   :src="ad.imageSrc"
                   reverse-transition="fade-transition"
@@ -27,7 +27,7 @@
                 :key="ad.id"
         >
           <v-card
-              class="mx-auto my-12"
+              class=" my-12"
               max-width="374"
           >
             <template slot="progress">
@@ -79,31 +79,12 @@
 <script>
 export default {
   name: "Home",
-  data () {
-    return {
-      ads: [
-        {
-          title: 'First ad',
-          description: 'First description',
-          promo: false,
-          imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-          id: '123'
-        },
-        {
-          title: 'Second ad',
-          description: 'First description',
-          promo: true,
-          imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-          id: '1234'
-        },
-        {
-          title: 'Third ad',
-          description: 'First description',
-          promo: true,
-          imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-          id: '12345'
-        }
-      ]
+  computed: {
+    promoAds (){
+        return this.$store.getters.promoAds
+    },
+    ads () {
+        return this.$store.getters.ads
     }
   }
 }

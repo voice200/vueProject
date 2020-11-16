@@ -3,7 +3,7 @@
     <v-layout row>
       <v-flex xs12>
         <v-subheader
-            class="header mt-n8" >{{title}}</v-subheader>
+            class="header mt-n8" >{{ad.title}}</v-subheader>
         <v-divider color="teal accent-2"></v-divider>
         <v-card
             class=" my-12"
@@ -20,12 +20,12 @@
           <v-img
               height="350"
               max-width="100%"
-              :src="imageSrc"
+              :src="ad.imageSrc"
           ></v-img>
 
           <v-card-text class="mb-8">
 
-            <div>{{description}}</div>
+            <div>{{ad.description}}</div>
           </v-card-text>
 
           <v-card-actions>
@@ -54,13 +54,11 @@
 <script>
 export default {
 name: "Ad",
-  data () {
-    return {
-          title: 'First ad',
-          description: 'First descriptionsFirst descriptionsFirst descriptionsFirst descriptionsFirst descriptionsFirst descriptionsFirst descriptionsFirst descriptionsFirst descriptions',
-          promo: false,
-          imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-          id: '123'
+  props: ['id'],
+  computed: {
+    ad () {
+      const id = this.id
+      return this.$store.getters.adById(id)
     }
   }
 }

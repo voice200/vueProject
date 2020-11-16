@@ -41,25 +41,12 @@ export default {
 name: "AdList",
   data () {
     return {
-      header: 'Ad List',
       index: 0,
-      ads: [
-        {
-          title: 'First ad',
-          description: 'First description',
-          promo: false,
-          imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-          id: '123',
-
-        },
-        {
-          title: 'Second ad',
-          description: 'First description',
-          promo: true,
-          imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-          id: '1234'
-        }
-      ]
+    }
+  },
+  computed: {
+    ads () {
+      return this.$store.getters.myAds
     }
   }
 }
