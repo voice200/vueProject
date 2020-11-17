@@ -112,8 +112,14 @@ export default {
       this.email= '',
       this.password = ''
       this.$refs.observer.reset()
-    },
-  }
+      this.$store.dispatch('clearError')
+    }
+  },
+  created() {
+    if (this.$route.query['loginError']) {
+      this.$store.dispatch('setError','Please log in to access this page')
+    }
+  },
 }
 </script>
 

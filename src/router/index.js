@@ -8,6 +8,7 @@ import AdList from "@/views/ads/AdList";
 import Orders from "@/views/user/Orders";
 import Home from "@/views/Home";
 import NotFoundComponent from "@/views/NotFoundComponent";
+import AuthGuard from './auth.guard'
 
 Vue.use(VueRouter)
 
@@ -36,17 +37,20 @@ const routes = [
   {
     path: '/new',
     name: 'new',
-    component: NewAd
+    component: NewAd,
+    beforeEnter: AuthGuard
   },
   {
     path: '/orders',
     name: 'orders',
-    component: Orders
+    component: Orders,
+    beforeEnter: AuthGuard
   },
   {
     path: '/list',
     name: 'list',
-    component: AdList
+    component: AdList,
+    beforeEnter: AuthGuard
   },
   {
     path: '*',

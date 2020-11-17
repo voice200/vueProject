@@ -18,7 +18,6 @@
             <v-list-item-icon>
               <v-icon
                   v-if="item.icon"
-                  color="teal accent-2"
               >
                 {{item.icon}}
               </v-icon>
@@ -26,6 +25,21 @@
 
             <v-list-item-content>
               <v-list-item-title v-text="item.title" ></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+          @click="logout"
+          >
+            <v-list-item-icon>
+              <v-icon
+                  v-if="isUserLogIn"
+              >
+                mdi-exit-to-app
+              </v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title v-text="'Logout'" ></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -65,6 +79,19 @@
         </v-icon>
         {{item.title}}
       </v-btn>
+      <v-btn depressed
+              @click="logout"
+             color="white"
+             class="hidden-sm-and-down"
+             v-if="isUserLogIn"
+      >
+        <v-icon
+            left
+        >
+          mdi-exit-to-app
+        </v-icon>
+        Logout
+      </v-btn>
       <!-- -->
     </v-app-bar>
 
@@ -76,6 +103,27 @@
 
         <router-view></router-view>
       </v-container>
+        <v-snackbar
+            :value="true"
+            color = "black"
+            :multi-line="true"
+            class="snackbar"
+            v-if="getError"
+            :timeout="5000"
+        >
+          {{getError}}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+                color="red"
+                text
+                v-bind="attrs"
+                @click="closeError"
+                @input="closeError"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
     </v-main>
   </v-app>
 </template>
@@ -85,15 +133,29 @@ export default {
   data () {
     return{
       drawer: false,
-      items:[
-        {title: 'login', icon: 'mdi-lock', url: '/login', namePage: 'Login form'},
-        {title: 'Registration', icon: 'mdi-face', url: '/registration', namePage:'Registration form'},
-        {title: 'Orders', icon: 'mdi-bookmark-outline', url: '/orders', namePage:'Orders'},
-        {title: 'New ad', icon: 'mdi-file-plus', url: '/new', namePage:'New ad'},
-        {title: 'My ads', icon: 'mdi-format-list-bulleted', url: '/list', namePage:'My list' }
-      ],
-      titlePage: ''
+      titlePage: '',
     }
+  },
+  computed: {
+    getError() {
+      return this.$store.getters.error
+    },
+    isUserLogIn () {
+      return this.$store.getters.isUserLogIn
+    },
+    items () {
+      if (this.isUserLogIn) {
+         return [
+           {title: 'Orders', icon: 'mdi-bookmark-outline', url: '/orders', namePage:'Orders'},
+           {title: 'New ad', icon: 'mdi-file-plus', url: '/new', namePage:'New ad'},
+           {title: 'My ads', icon: 'mdi-format-list-bulleted', url: '/list', namePage:'My list' }
+         ]
+      }
+      return [
+        {title: 'login', icon: 'mdi-lock', url: '/login', namePage: 'Login form'},
+        {title: 'Registration', icon: 'mdi-face', url: '/registration', namePage:'Registration form'}
+      ]
+    },
   },
   methods: {
     getTitle () {
@@ -106,6 +168,13 @@ export default {
           }
           return this.titlePage
       })
+    },
+    closeError() {
+      this.$store.dispatch('clearError')
+    },
+    logout () {
+      this.$store.dispatch('logoutUser')
+      this.$router.push('/')
     }
   },
   beforeMount() {
@@ -124,5 +193,8 @@ export default {
   #subheader{
     font-size: 20px;
     color: black;
+  }
+  .snackbar{
+    opacity: 0.7;
   }
 </style>
