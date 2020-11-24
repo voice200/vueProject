@@ -5,8 +5,12 @@ import 'vuetify/dist/vuetify.min.css'
 import router from './router'
 import store from './store'
 import fb from 'firebase/app'
+import buyModal from "@/views/buyModal";
+// import thanksModal from "@/views/thanks";
 
 Vue.config.productionTip = false
+Vue.component('app-buy-modal',buyModal)
+// Vue.component('app-thanks-modal', thanksModal)
 
 new Vue({
   vuetify,
@@ -29,6 +33,8 @@ new Vue({
         this.$store.dispatch('autoLogUser', user)
       }
     })
+
+    this.$store.dispatch('fetchAds')
   },
 
   render: h => h(App)
