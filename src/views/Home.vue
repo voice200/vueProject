@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!loading">
+  <div>
     <v-container fluid>
       <v-layout row>
         <v-flex xs12>
@@ -27,7 +27,7 @@
                 :key="ad.id"
         >
           <v-card
-              class="mx-auto my-12"
+              class=" my-12"
               max-width="374"
           >
             <template slot="progress">
@@ -73,18 +73,6 @@
       </v-layout>
     </v-container>
   </div>
-  <div v-else>
-    <v-container>
-      <v-layout row>
-        <v-flex class="text-center mt-auto" id="">
-          <v-progress-circular
-              indeterminate
-              color="teal accent-4"
-          ></v-progress-circular>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </div>
 
 </template>
 
@@ -97,15 +85,12 @@ export default {
     },
     ads () {
         return this.$store.getters.ads
-    },
-    loading () {
-      return this.$store.getters.loading
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .card-btn{
   background: aquamarine;
 }
