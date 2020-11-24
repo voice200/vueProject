@@ -1,41 +1,149 @@
+import fb from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
+import 'firebase/database'
+import 'firebase/storage'
+
+class Ad {
+    constructor(title,
+                description,
+                ownerId,
+                imageSrc = '',
+                promo = false,
+                id=null
+                ) {
+        this.title = title
+        this.description = description
+        this.ownerId = ownerId
+        this.imageSrc = imageSrc
+        this.promo = promo
+        this.id = id
+
+    }
+}
+
 export default {
     state: {
-        ads: [
-            {
-                title: 'First ad',
-                description: 'First description',
-                promo: false,
-                imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-                id: '123'
-            },
-            {
-                title: 'Second ad',
-                description: 'First description',
-                promo: true,
-                imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-                id: '1234'
-            },
-            {
-                title: 'Third ad',
-                description: 'First description',
-                promo: true,
-                imageSrc: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-                id: '12345'
-            }
-        ]
+        ads: []
     },
     mutations: {
         createAd(state, payload) {
             state.ads.push(payload)
-            console.log(payload)
+        },
+        loadAds (state, payload) {
+            state.ads = payload
+        },
+        updateAd (state, payload) {
+          const ad = state.ads.find(ad => {
+                return ad.id === payload.id
+            })
+            ad.title = payload.title
+            ad.description = payload.description
+            ad.promo = payload.promo
+            if (payload.imageSrc) {
+                ad.imageSrc = payload.imageSrc
+            }
         }
     },
     actions: {
-        createAd ({commit}, payload) {
-            payload.id = Date.now().toString()
-            commit('createAd', payload)
-            console.log(payload, this.state.ads)
+        async createAd ({commit, getters}, payload) {
+            commit('clearError')
+            commit('setLoading', true)
 
+            const image = payload.image
+
+            try {
+                const newAd = new Ad(
+                    payload.title,
+                    payload.description,
+                    getters.getUser.id,
+                    payload.promo)
+
+                const ad = await fb.database().ref('ads').push(newAd)
+                const imageExt = image.name. slice(image.name.lastIndexOf('.'))
+                const path = `${ad.key}${imageExt}`
+                const storageRef = fb.storage().ref('ads')
+                await storageRef.child(path).put(image)
+                const imageSrc = await storageRef.child(path).getDownloadURL()
+                const adAgain = {...newAd, id: ad.key, imageSrc}
+                await fb.database().ref(`ads/${ad.key}`).update(adAgain)
+
+                commit('createAd', adAgain)
+                commit('setLoading', false)
+
+            } catch (e) {
+                commit('setError', e.message)
+                commit('setLoading', false)
+                console.log(e.message)
+                throw e
+            }
+        },
+        async fetchAds ({commit}) {
+            commit('clearError')
+            commit('setLoading', true)
+            const  resultAds = []
+
+            try {
+              const fbVal = await fb.database().ref('ads').once('value')
+                const ads = fbVal.val()
+                Object.keys(ads).forEach(key =>{
+                    const ad = ads[key]
+                    resultAds.push(
+                        new Ad(ad.title, ad.description, ad.ownerId, ad.imageSrc, ad.promo, key)
+                    )
+                })
+                commit('loadAds', resultAds)
+
+                commit('setLoading', false)
+            } catch (e) {
+                commit('setError', e.message)
+                commit('setLoading', false)
+                throw e
+            }
+        },
+        async updateAd ({commit, getters}, payload) {
+            commit('clearError')
+            commit('setLoading', true)
+            let newAd
+            console.log('update', payload, getters)
+            try {
+                if (payload.image) {
+                    console.log('есть картинка', payload)
+                    const image = payload.image
+                  const preNewAd = new Ad(
+                        payload.title,
+                        payload.description,
+                        getters.getUser.id,
+                        payload.imageSrc,
+                        payload.promo,
+                        payload.id)
+
+                    const imageExt = image.name. slice(image.name.lastIndexOf('.'))
+                    const path = `${preNewAd.id}${imageExt}`
+                    const storageRef = fb.storage().ref('ads')
+                    await storageRef.child(path).delete()
+                    await storageRef.child(path).put(image)
+                    const imageSrc = await storageRef.child(path).getDownloadURL()
+                    newAd = {...preNewAd}
+                    newAd.imageSrc = imageSrc
+
+                } else {
+                        newAd = new Ad(
+                        payload.title,
+                        payload.description,
+                        getters.getUser.id,
+                        payload.imageSrc,
+                        payload.promo,
+                        payload.id)
+                }
+                await fb.database().ref(`ads/${newAd.id}`).update(newAd)
+                commit('updateAd', newAd)
+                commit('setLoading', false)
+            } catch (e) {
+                commit('setError', e.message)
+                commit('setLoading', false)
+                throw e
+            }
         }
     },
     getters: {
@@ -48,8 +156,10 @@ export default {
                 return ad.promo
             })
         },
-        myAds (state) {
-            return state.ads
+        myAds (state, getters) {
+            return state.ads.filter( ad => {
+               return  ad.ownerId === getters.getUser.id
+            })
         },
         adById (state) {
             return adId => {

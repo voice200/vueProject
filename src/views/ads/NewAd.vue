@@ -33,12 +33,22 @@
                   required
               ></v-text-field>
             </validation-provider>
+            <validation-provider
+                v-slot="{ errors }"
+                name="image"
+                rules="required"
+            >
               <v-file-input
+                  :error-messages="errors"
+                  v-model="img"
                   counter
                   show-size
                   truncate-length="13"
                   color="teal accent-4"
+                  accept="image/*"
+                  @change="onFileChange"
               ></v-file-input>
+            </validation-provider>
             <v-switch
                 v-model="promo"
                 label="Add in promo?"
@@ -47,7 +57,8 @@
             <v-btn
                 class="mr-4 btn-orders"
                 outlined
-                :disabled="invalid"
+                :loading = "loading"
+                :disabled="invalid||loading"
                 @click="createAd"
             >
               Add new ad
@@ -93,29 +104,49 @@ export default {
     title: '',
     description: '',
     promo: false,
-    imgSrc: 'https://www.valuecoders.com/blog/wp-content/uploads/2019/03/vuejs1200.png'
+    imgSrc: '',
+    img:null
   }),
-
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
+  },
   methods: {
     createAd () {
-      if(this.$refs.observer.validate()) {
+      if(this.$refs.observer.validate() && this.img) {
         const ad = {
           title: this.title,
           description: this.description,
           promo: this.promo,
-          imageSrc: this.imgSrc
+          image: this.img
         }
+
         this.$store.dispatch('createAd', ad)
-        console.log('Успешненько', ad)
+            .then(() => {
+                this.$router.push('/list')
+            })
+            .catch(()=>{})
       }
     },
     clear () {
       this.title = ''
       this.description = ''
       this.promo = false
-      this.imgSrc = ''
+      this.img = null
       this.$refs.observer.reset()
     },
+    onFileChange () {
+        if (!this.img){
+          this.imgSrc = ''
+        } else {
+          const reader = new FileReader()
+          reader.readAsDataURL(this.img)
+          reader.onload = () =>{
+            this.imgSrc = reader.result
+          }
+        }
+    }
   }
 }
 </script>

@@ -2,7 +2,29 @@
   <v-container>
     <v-layout row>
       <v-flex xs12>
+        <v-btn
+            class="mr-4"
+            color="teal accent-2"
+            depressed
+            @click="showOrders"
+        >
+          Active orders</v-btn>
+        <v-btn
+          class="mr-4"
+          color="teal accent-2"
+          depressed
+          @click="showOrders"
+        >
+          Orders is Done
+        </v-btn>
+        <v-btn
+            class="mr-4"
+            color="teal accent-2"
+            depressed
+            @click="showOrders">
+          All Order</v-btn>
         <v-list
+            class="mt-8"
             subheader
             two-line
             flat
@@ -64,6 +86,9 @@ export default {
   name: "Orders",
   data () {
     return {
+      isActive: false,
+      isDone: false,
+      isAll: false,
       index: 0,
       orders: [
         {
@@ -96,7 +121,13 @@ export default {
         return ordersDone
       })
       console.log(ordersDone);
+    },
+    showOrders () {
+       this.isActive = false
+       this.isActive= !this.isActive
+       console.log(this.isActive)
     }
+
   }
 }
 </script>

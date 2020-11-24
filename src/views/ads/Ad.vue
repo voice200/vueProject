@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="!loading">
     <v-layout row>
       <v-flex xs12>
         <v-subheader
@@ -30,28 +30,30 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
-                class="btn-orders"
-                outlined
-                color="black"
-
-            >
-              Buy
-            </v-btn>
-            <v-btn
-                color="black"
-                text
-            >
-              Edit
-            </v-btn>
+            <app-buy-modal :ad="ad"></app-buy-modal>
+            <add-edit-ad-modal :ad="ad" v-if="isOwnerAd"></add-edit-ad-modal>
           </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
   </v-container>
+  <div v-else>
+    <v-container>
+      <v-layout row>
+        <v-flex class="text-center mt-auto" id="">
+          <v-progress-circular
+              indeterminate
+              color="teal accent-4"
+          ></v-progress-circular>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
+import editAd from './editAd'
+
 export default {
 name: "Ad",
   props: ['id'],
@@ -59,7 +61,16 @@ name: "Ad",
     ad () {
       const id = this.id
       return this.$store.getters.adById(id)
+    },
+    loading () {
+      return this.$store.getters.loading
+    },
+    isOwnerAd() {
+      return this.ad.ownerId === this.$store.getters.getUser.id
     }
+  },
+  components: {
+    addEditAdModal: editAd
   }
 }
 </script>
