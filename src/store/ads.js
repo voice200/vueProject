@@ -105,7 +105,6 @@ export default {
             commit('clearError')
             commit('setLoading', true)
             let newAd
-            console.log('update', payload, getters)
             try {
                 if (payload.image) {
                     console.log('есть картинка', payload)

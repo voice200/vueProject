@@ -52,14 +52,7 @@
             <v-divider class="mx-4"></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                  class="card-btn"
-                  outlined
-                  color="black"
-                  text
-              >
-                Buy
-              </v-btn>
+              <app-buy-modal :ad="ad"></app-buy-modal>
               <v-btn
                   color="black"
                   text
